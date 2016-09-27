@@ -2,6 +2,7 @@
 ### Nouveautés et fonctionnalités
 
 - [maybe_unused](#maybe_unused)
+- [nodiscard](#nodiscard)
 
 ---
 
@@ -38,3 +39,43 @@ void bar()
   assert(i == 2);
 }
 ```
+
+---
+
+#### nodiscard <a id="nodiscard"></a>
+
+L'attribut `[[nodiscard]]` lorsqu'il est utilisé sur une fonction, permet d'indiquer que le retour de la fonction ne doit pas être ignoré, mais récupéré ou utilisé. Dans le cas contraire, un warning est émis par le compilateur. Il peut être particulièrement intéressant pour forcer les tests de retour d'erreur des fonctions.
+
+```cpp
+[[nodiscard]]
+int foo()
+{
+  return 2;
+}
+
+int main()
+{
+	foo();      // Warning : Valeur de retour ignorée
+}
+```
+
+Il est également possible d'utiliser l'attribut avec des déclarations de type, commes les `struct`, `class` ou encore `enum`.
+
+```cpp
+class [[nodiscard]] A 
+{
+  
+};
+
+A foo()
+{
+  return {};
+}
+
+int main()
+{
+	foo();      // Warning : Valeur de retour ignorée
+}
+```
+
+Dans ce cas, toute fonction retournant un objet du type déclaré avec `[[nodiscard]]` provoquera un warning si le retour est ignoré.
