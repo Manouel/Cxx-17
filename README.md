@@ -5,6 +5,7 @@
 - [maybe_unused](#maybe_unused)
 - [nodiscard](#nodiscard)
 - [Namespaces imbriqués](#nested_namespaces)
+- [Fonction clamp](#clamp)
 
 ---
 
@@ -183,4 +184,20 @@ L'utilisation elle, ne change pas.
 
 ```cpp
 first::second::A a;
+```
+
+---
+
+#### Fonction clamp <a id="clamp"></a>
+
+Il est parfois utilise de vouloir garder une valeur dans un intervalle, en lui imposant un minimum et un maximum, mais en gardant la valeur si elle est correcte. Pour cela, l'écriture la plus concise reste l'utilisation de ternaires.
+
+```cpp
+std::cout << (grade < 0 ? 0 : (grade > 20 ? 20 : grade)) << std::endl;
+```
+
+Pour cela, C++17 introduit une nouvelle fonction `clamp`.
+
+```cpp
+std::cout << std::clamp(grade, 0, 20) << std::endl;
 ```
