@@ -4,6 +4,7 @@
 - [Blocs d'initialisation `if`/`switch`](#if_init_statements)
 - [maybe_unused](#maybe_unused)
 - [nodiscard](#nodiscard)
+- [Namespaces imbriqués](#nested_namespaces)
 
 ---
 
@@ -144,3 +145,42 @@ int main()
 ```
 
 Dans ce cas, toute fonction retournant un objet du type déclaré avec `[[nodiscard]]` provoquera un warning si le retour est ignoré.
+
+---
+
+#### Namespaces imbriqués <a id="nested_namespaces"></a>
+
+Actuellement, lorsque l'on a plusieurs namespaces en C++, cela se traduit de la façon suivante.
+
+```cpp
+namespace first
+{
+	namespace second
+	{
+		class A
+		{
+
+		};
+	}
+}
+```
+
+Selon les conventions, les namespaces sont indentés ou non, mais dans tous les cas, leur indentation peut poser problème. Dans le premier cas, on obtient un niveau d'indentation élevé pour toute la classe ou tout le fichier dès lors que l'on a 3 ou 4 namespaces imbriqués, ce qui n'est pas très agréable. Dans l'autre cas, lorsqu'on choisit de ne pas indenter les espaces de noms, alors cela peut entrainer des conflits avec l'indentation automatique de certains éditeurs.
+
+Afin de réduire ce problème, le C++17 autorise une nouvelle écriture des namespaces imbriqués, utilisant l'opérateur de portée `::`.
+
+```cpp
+namespace first::second
+{
+	class A
+	{
+
+	};
+}
+```
+
+L'utilisation elle, ne change pas.
+
+```cpp
+first::second::A a;
+```
