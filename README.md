@@ -6,6 +6,7 @@
 - [nodiscard](#nodiscard)
 - [Namespaces imbriqués](#nested_namespaces)
 - [Fonction clamp](#clamp)
+- [__has_include](#has_include)
 
 ---
 
@@ -200,4 +201,39 @@ Pour cela, C++17 introduit une nouvelle fonction `clamp`.
 
 ```cpp
 std::cout << std::clamp(grade, 0, 20) << std::endl;
+```
+
+---
+
+#### __has_include <a id="has_include"></a>
+
+Parfois, on peut avoir des inclusions qui se font sous certaines conditions. Les cas les plus fréquents sont les tests d'OS.
+
+```cpp
+#if defined(__linux__) || defined(__unix__) || defined(__APPLE__)
+	#include <unistd.h>
+#else
+	#include <windows.h>
+#endif
+```
+
+Une nouvelle directive `__has_include` permet de tester si le fichier que l'on veut inclure est disponible. Cela permet donc de s'adapter à l'environnement de manière simple.
+
+```cpp
+#if __has_include(<unistd.h>)
+#include <unistd.h>
+#endif
+
+#if __has_include(<windows.h>)
+#include <windows.h>
+#endif
+```
+
+Un autre exemple d'utilisation peut concerner les futurs standards du langage. En effet, avant qu'une fonctionnalité soit standardisée, celle-ci est placée dans un espace de noms `experimental`. Ici, on peut donc aussi adapter l'inclusion en fonction afin que le code reste fonctionnel lors du changement.
+
+```cpp
+#if __has_include(<filesystem>)
+	#include <filesystem>
+#elif __has_include(<experimental/filesystem>)
+	#include <experimental/filesystem>
 ```
