@@ -7,6 +7,7 @@
 - [Namespaces imbriqués](#nested_namespaces)
 - [Fonction clamp](#clamp)
 - [__has_include](#has_include)
+- [Fold expressions](#fold_expressions)
 
 ---
 
@@ -236,4 +237,59 @@ Un autre exemple d'utilisation peut concerner les futurs standards du langage. E
 	#include <filesystem>
 #elif __has_include(<experimental/filesystem>)
 	#include <experimental/filesystem>
+```
+
+---
+
+#### Fold expressions <a id="fold_expressions"></a>
+
+Il existe maintenant une nouvelle syntaxe pour l'utilisation des [templates variadiques](https://github.com/Manouel/Cxx-11/blob/master/README.md#variadic_templates) permettant d'éviter l'écriture récursive dans certains cas.
+
+```cpp
+// C++14
+template<typename T>
+T adder(T v)
+{
+	return v;
+}
+
+template<typename T, typename... Args>
+auto adder(T first, Args... args)
+{
+	return first + adder(args...);
+}
+
+
+// C++17
+template<typename... Args>
+auto adder(Args... args)
+{
+	return (args + ...);
+}
+```
+
+Ici l'expansion peut aussi bien se faire par la gauche que par la droite.
+
+```cpp
+template<typename... Args>
+auto minus1(Args... args)
+{
+	return (args - ...);
+}
+
+template<typename... Args>
+auto minus2(Args... args)
+{
+	return (... - args);
+}
+```
+
+De la même manière, on peut ici calculer la moyenne des arguments.
+
+```cpp
+template<typename... Args>
+auto avg(Args... args)
+{
+	return (args + ...) / sizeof... (args);
+}
 ```
