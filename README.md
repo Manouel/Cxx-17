@@ -4,6 +4,7 @@
 - [Blocs d'initialisation `if`/`switch`](#if_init_statements)
 - [maybe_unused](#maybe_unused)
 - [nodiscard](#nodiscard)
+- [fallthrough](#fallthrough)
 - [Namespaces imbriqués](#nested_namespaces)
 - [Fonction clamp](#clamp)
 - [__has_include](#has_include)
@@ -148,6 +149,37 @@ int main()
 ```
 
 Dans ce cas, toute fonction retournant un objet du type déclaré avec `[[nodiscard]]` provoquera un warning si le retour est ignoré.
+
+---
+
+#### fallthrough <a id="fallthrough"></a>
+
+Il est possible dans certains cas d'utilisation des `switch` de ne pas mettre de `break` pour que des actions soient communes à certains cas, comme dans l'exemple suivant.
+
+```cpp
+switch (a)
+{
+	case 1:
+		std::cout << "1";
+	case 2:
+		std::cout << "2";
+}
+```
+
+Dans le cas où le `case` en question n'est pas vide (comme le premier), le compilateur peut alors émettre un warning en pensant qu'il s'agit d'une erreur, car le cas 1 va alors afficher 1 et 2.
+
+Si cela est volontaire, le C++17 permet d'utiliser l'attribut `[[fallthrough]]` afin de l'indiquer au compilateur.
+
+```cpp
+switch (a)
+{
+	case 1:
+		std::cout << "1";
+        [[fallthrough]];
+	case 2:
+		std::cout << "2";
+}
+```
 
 ---
 
