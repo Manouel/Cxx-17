@@ -9,6 +9,7 @@
 - [Fonction clamp](#clamp)
 - [__has_include](#has_include)
 - [Fold expressions](#fold_expressions)
+- [Capture de `this` par valeur dans les lambdas](#this_capture)
 
 ---
 
@@ -324,4 +325,36 @@ auto avg(Args... args)
 {
 	return (args + ...) / sizeof... (args);
 }
+```
+
+---
+
+#### Capture de `this` par valeur dans les lambdas <a id="this_capture"></a>
+
+En C++14, il n'est pas possible dans une lambda de capturer l'objet pointé par `this` par valeur, et l'accès à ses membres se fait donc toujours par référence. Cela peut poser certains problèmes si la lambda est distribuée de manière asynchrone, puisqu'il est alors possible lors de l'accès aux membres que le pointeur `this` ne soit plus valide alors que celui qui le manipule oui.
+Il était tout de même possible d'en créer une copie soi-même :
+
+```cpp
+auto l = [=, tmp=*this](int i) {
+
+};
+```
+
+Mais cela n'est pas toujours pratique et source d'erreur, puisque l'accès à un membre peut alors involontairement être faite au travers du pointeur `this`.
+
+Le C++17 ajoute donc la possibilité de passer le pointeur vers l'objet courant par valeur.
+
+```cpp
+struct S
+{
+    int x;
+    
+    void f()
+    {
+        auto a = [this]() { x = 42 ; };  // (*this).x
+        a();    // x = 42
+        
+        auto b = [*this]() { /*...*/ }; // this captured by value : read only access
+    }
+};
 ```
