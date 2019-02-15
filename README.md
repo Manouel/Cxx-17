@@ -11,6 +11,7 @@
 - [Fold expressions](#fold_expressions)
 - [Capture de `this` par valeur dans les lambdas](#this_capture)
 - [Déduction de templates](#template_deduction)
+- [std::optional](#optional)
 
 ---
 
@@ -392,4 +393,52 @@ struct A { A(T,T) {} };
 
 A a(1, 2);                  // A<int>
 auto ptrA = new A(1, 2);    // A<int>
+```
+
+---
+
+#### std::optional <a id="optional"></a>
+
+Lorsque l'on voulait créer un objet pouvant être null, il fallait utiliser un pointeur (smart ou non) ou bien utiliser le pattern classique de méthode retournant un booléen et dont de dernier paramètre est une référence contenant le résultat.
+
+```cpp
+bool readFile(const std::string& filepath, /* out */ std::string& data);
+```
+
+Le C++17 introduit le type `std::optional` qui est un type template pouvant représenter l'absence de valeur.
+Il peut donc être retourné par les fonctions pouvant échouer ou produire une "non-value".
+
+```cpp
+#include <optional>
+
+std::optional<int> getFirst(const std::vector<int>& v)
+{
+    if (!v.empty())
+        return std::optional<int>(v.front());
+    else
+        return std::nullopt;
+}
+```
+
+L'utilisation se fait de la même manière qu'un pointeur. Il faut tester la présence de valeur avant d'accéder l'objet.
+On peut ensuite accéder au contenu en déréférançant l'objet ou via la méthode `value`.
+
+A noter que la méthode `value_or` permet d'indiquer directement une valeur par défaut, et donc d'éviter le test.
+
+```cpp
+const std::vector<int> v { 1, 2, 3 };
+const std::vector<int> v2 {};
+
+auto first = getFirst(v);
+
+if (first) // ou if (first.has_value())
+{
+    std::cout << *first << std::endl;                // 1
+    std::cout << first.value() << std::endl;         // 1
+    std::cout << first.value_or(0) << std::endl;     // 1
+}
+
+first = getFirst(v2);
+
+std::cout << first.value_or(0) << std::endl;            // 0
 ```
