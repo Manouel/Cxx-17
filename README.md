@@ -10,6 +10,7 @@
 - [__has_include](#has_include)
 - [Fold expressions](#fold_expressions)
 - [Capture de `this` par valeur dans les lambdas](#this_capture)
+- [Déduction de templates](#template_deduction)
 
 ---
 
@@ -357,4 +358,38 @@ struct S
         auto b = [*this]() { /*...*/ }; // this captured by value : read only access
     }
 };
+```
+
+---
+
+#### Déduction de templates <a id="template_deduction"></a>
+
+Le C++17 introduit la déduction de templates. Là où avant on pouvait, pour certains types templates, utiliser une méthode de construction et `auto` pour utiliser la déduction de type, il est désormais possible de ne pas indiquer les arguments du template.
+
+```cpp
+// C++11/14
+const auto t1 = std::make_tuple(3, 4);
+
+// C++17
+std::tuple t2(3,  4);
+```
+
+Cela permet donc de construire les objets suivants :
+
+```cpp
+std::array arr { 1, 2, 3 };     // std::array<int>
+std::vector v { 2.2, 3.3 };     // std::vector<double>
+
+std::pair p { "1", Foo() };     // std::pair<std::string, Foo>
+std::tuple t { 1, 2, 'A' };     // std::tuple<int, int, char>
+```
+
+Il est également possible d'utiliser cette construction pour ses propres types template.
+
+```cpp
+template<class T>
+struct A { A(T,T) {} };
+
+A a(1, 2);                  // A<int>
+auto ptrA = new A(1, 2);    // A<int>
 ```
